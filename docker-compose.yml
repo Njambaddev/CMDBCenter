@@ -1,0 +1,51 @@
+services:
+  itsm-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ITSM-Center-Backend
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      NODE_ENV: production
+      CORS_ORIGIN: http://localhost:8090,http://localhost:5173
+      ENABLE_DEMO_MODE: ${ENABLE_DEMO_MODE:-false}
+      ALLOW_LIVE_WRITES: ${ALLOW_LIVE_WRITES:-true}
+      ZNUNY_BASE_URL: ${ZNUNY_BASE_URL:-https://Mysupport-Prod-App/otrs/nph-genericinterface.pl}
+      ZNUNY_HOST_HEADER: mysupportstaging.atlancis.com
+      ZNUNY_REJECT_UNAUTHORIZED: "false"
+      ZNUNY_TIMEOUT_MS: "60000"
+      ZNUNY_WS_TICKET: portal_with_catalogue
+      ZNUNY_WS_CMDB: PDU_CircuitsOutlets_API
+      ZNUNY_WS_SLA: "SLA Api"
+      ZNUNY_SERVICE_USER: ${ZNUNY_SERVICE_USER:-}
+      ZNUNY_SERVICE_PASSWORD: ${ZNUNY_SERVICE_PASSWORD:-}
+      ADMIN_USERS: ${ADMIN_USERS:-root@localhost,David,Njuguna,Julius.Mutai}
+      CACHE_TTL_SECONDS: "300"
+    volumes:
+      - itsm_audit_data:/app/data
+    ports:
+      - "4000:4000"
+    networks:
+      - mysupport_prod_network
+
+  itsm-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ITSM-Center-Frontend
+    restart: unless-stopped
+    depends_on:
+      - itsm-backend
+    ports:
+      - "8090:80"
+    networks:
+      - mysupport_prod_network
+
+volumes:
+  itsm_audit_data:
+
+networks:
+  mysupport_prod_network:
+    external: true
+    name: mysupport_prod_network

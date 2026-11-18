@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+backend/.env
+backend/data/audit-logs.json
+backend/data/live-znuny-cache.json
+backend/data/custom-cmdb-classes.json
+backend/data/*.tmp
+*.log
+.DS_Store
